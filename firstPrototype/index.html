@@ -1,0 +1,706 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+	
+		<!-- Import Javascripts -->
+		<script type="text/javascript" src="files/jquery_005.js"></script> 
+		<script type="text/javascript" src="files/jquery-ui-1.js"></script> 
+		<script type="text/javascript" src="files/jquery_004.js"></script> 
+		<script type="text/javascript" src="files/jquery.js"></script>
+		<script type="text/javascript" src="files/jquery_002.js"></script>
+		<script type="text/javascript" src="files/jquery_003.js"></script>
+		<script type="text/javascript" src="files/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+
+		<!-- Import Style Sheets -->
+		<link rel="stylesheet" type="text/css" href="files/jScrollPane.css"> 
+		<link type="text/css" href="files/jquery-ui-1.css" rel="stylesheet">
+		
+		<link rel="stylesheet" type="text/css" href="files/style.css">
+		<link rel="stylesheet" type="text/css" href="files/jquery.css"> 
+		<link rel="stylesheet" href="files/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
+		
+		<title>WINGS Workflow Demo</title>
+		
+		<!--  Main Application Javascripts -->
+		<script type="text/javascript">
+			/******************************************************************
+			 * Daniel Garijo                                                  *
+			 * Based on the work by Evan Sandhaus (evan@nytimes.com)          *
+             * for The New York Times.                                        *
+			 *                                                                *
+			 *                                                                *
+			 * This following source code is licensed under the Apache        *
+			 * License, Version 2.0 (the "License"). You may obtain a copy of *
+			 * the License at http://www.apache.org/licenses/LICENSE-2.0.     *
+		     * Unless required by applicable law or agreed to in writing,     *
+		     * software distributed under the License is distributed on an    *
+		     * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,   *
+		     * either express or implied.                                     *
+		     ******************************************************************/		
+			
+						
+			/**
+			 * Code executed when document completes loading.
+			 */
+			$(document).ready(function() {
+				setupAutoComplete();
+			});
+
+			/******************************************************************
+			 *
+			 * Auto-Complete Initialization Methods
+			 *
+			 ******************************************************************/
+			
+			/**
+			 * This code fetches all items from DBPedia that are
+			 * of type 'dbpedia-owl:University' and loads their names 
+			 * into an autocomplete field.  Since DBPedia restrics the 
+			 * maximum number of items returned by a request to 1000 
+			 * we must first ask for the total number of items and then
+			 * make several requests to retrieve all of the data.
+			 */
+			function setupAutoComplete() {
+				 $("#progressbar").progressbar({ value: 0});
+					
+				_autoCompleteMap = [];
+				_autoCompleteArray = [];
+
+				// SPARQL query for getting the count of the number of 
+				// items in DBPedia that are of type 'dbpedia-owl:University'
+				var sparql =
+					"SELECT COUNT(distinct ?uri) AS ?count WHERE { " +
+				    	"?uri a <http://www.opmw.org/ontology/WorkflowTemplate> . " +
+					"}";
+
+				// webn+1 URI for executing the sparql query. 
+				var endpointURI = 
+					"http://opmw.org/sparql?query=" + 
+					escape(sparql) + 
+					"&format=json";
+				//alert(endpointURI);
+				// An ajax request that requests the above URI and parses the response. 
+				$.ajax( {
+					dataType :'jsonp',
+					jsonp :'callback',
+					url :endpointURI,
+					success : function(json) {
+						//alert(json.results.bindings[0].count.value);
+						if( json && 
+							json.results && 
+							json.results.bindings && 
+							json.results.bindings.length > 0 &&
+							json.results.bindings[0].count) {
+							loadAutoCompleteData(json.results.bindings[0].count.value,0);
+						}
+					}
+				}); 
+			}
+
+			/**
+			 * This method loads all the resource names from the repository.
+			 */
+			function loadAutoCompleteData(count,offset) {
+				_callbacks = [];
+				for(var i =0; i < Math.ceil(count/1000.0); i++) {
+					_callbacks[i] = false;
+				}
+				while(offset < count) {
+					loadTemplateNames(count, offset);
+					offset+=1000;
+				}
+				waitForCallbacks(new Date().getTime());
+			}
+
+			/**
+			 * This method waits until all of the repository's requests have 
+			 * completed or 30 seconds have elapsed (whichever happens 
+			 * first) and then displays the dbpedia auto complete field.
+			 */
+			function waitForCallbacks(startTime) {
+				var test = true;
+				for(var i =0; i < _callbacks.length; i++) {
+					test = test && _callbacks[i];
+				}
+				if(test || (new Date().getTime() - startTime > 30000)) {
+					renderAutoComplete();
+				} else {
+					setTimeout(function() {
+						waitForCallbacks(startTime);
+					}, 100);
+				}
+			}
+			
+			/**
+			 * Use JQuery autocomplete (http://docs.jquery.com/Plugins/Autocomplete) 
+			 * to render an autocomplete field over the data returned by the repository.
+			 */
+			function renderAutoComplete() {
+				for(var key in _autoCompleteMap) {
+					_autoCompleteArray.push(key);
+				}
+				//alert(_autoCompleteMap);
+				var html = 
+					"<div style='padding:0px; border:0px;'>" + 
+					"<input type='text' style='width:400px; height: 30px; font-size:x-large;' id='resource_input' \/>" + 
+					"<span id='resource_input_loading'\/>" + 
+					"<\/div>";
+				$("#auto_complete_container").html(html);
+				$("#resource_input").autocomplete(
+					_autoCompleteArray,
+					{
+						max: 25,
+						width: 400, 
+						selectFirst: true,
+						scroll: true,
+						matchContains: true,
+						matchCase: false
+				});
+
+				$("#resource_input").result(
+					function(event, data, formatted) {
+						$('#resource_input_loading').html("<img style='padding-left:7px; vertical-align:center;' src='img/loading_bars.gif'/>");
+						loadTemplate(_autoCompleteMap[data[0]], data[0]);
+					}
+				);
+			}
+
+			/**
+			 * Query The endpoint for templates 
+			 */
+
+			function loadTemplateNames(count, offset) {
+				// SPARQL query for getting the names and URIs  
+				var sparql =
+					"SELECT distinct ?uri ?name WHERE { " +
+				    	"?uri a <http://www.opmw.org/ontology/WorkflowTemplate> . " +
+						"?uri <http://www.w3.org/2000/01/rdf-schema#label> ?name ."+
+					"} LIMIT 1000 OFFSET " + offset;
+
+				// webn+1 URI for executing the sparql query. 
+				var endpointURL = 
+					"http://opmw.org/sparql?query=" + 
+					escape(sparql)+ 
+					"&format=json"; 
+				//alert(endpointURL);
+				// An ajax request that requests the above URI and parses the response. 
+				$.ajax( {
+					dataType :'jsonp',
+					jsonp :'callback',
+					url :endpointURL,
+					success : function(json) {
+						if(json) {
+							//alert(json);
+							_callbacks[offset/1000] = true;
+							var callbacksComplete = 0;
+							for(var i =0; i < _callbacks.length; i++) {
+								callbacksComplete += (_callbacks[i] ? 1 : 0);
+							}
+							var progress = 100;
+							if(count>1000){
+								progress = Math.ceil((100.0*callbacksComplete)/(0.001*count));
+							}
+							$("#progressbar").progressbar( "option", "value", progress );
+							$("#progess_percent_complete").html(progress + "%");
+							parseAutocompleteData(json);
+						}
+					}
+				});
+			}
+
+			/**
+			 * Method for parsing the names and URIs of the templates			 
+			 */
+			function parseAutocompleteData(json) {
+				if(json.results && json.results.bindings) {
+					var bindings = json.results.bindings;
+					//alert(bindings);
+					for(var i =0; i < bindings.length; i++) {
+						binding = bindings[i];
+						if(binding.name && binding.uri) {
+							if(binding.uri.value.toLowerCase().indexOf("list_of") == -1) {
+								var name = binding.name.value;
+								//alert(name);
+								name = name.replace(/\d+px\s*/g,"");
+								if(name.toLowerCase().indexOf(".jpg") == -1 && 
+								   name.toLowerCase().indexOf(".png") == -1 &&
+								   name.toLowerCase().indexOf(".gif") == -1) {
+									_autoCompleteMap[name] = binding.uri.value;
+									
+								}
+							}
+						}
+					}
+				}
+			}
+
+			
+			/**
+			 * Loads a template and all its metadata
+			 */
+			function loadTemplate(templateURI, templName) {
+				// Clear the previous results if any.
+				$("#templateMetadata").html("");
+
+				// Display the author name being queried.
+				$("#author_name_header").html(templName);
+
+				//we set each section to "loading"
+				var htmlLoad = "<img src='img/loading.gif' style='vertical-align:center;margin-left:150px'><\/img>";
+				$("#templateMetadata").html(htmlLoad);
+				$("#variablesParametersProcesses").html(htmlLoad);
+				$("#availableExecutions").html(htmlLoad);
+
+				//query for retrieving template metadata
+				var sparql_metadata = "select ?modified ?label ?diagram ?createdIn ?template ?vNumber ?contrib ?doc "+ 
+					"where {"+
+					"OPTIONAL{<"+templateURI+"> <http://purl.org/dc/terms/modified> ?modified.}."+
+					"<"+templateURI+"> <http://www.w3.org/2000/01/rdf-schema#label> ?label."+
+					"<"+templateURI+"> <http://www.opmw.org/ontology/hasTemplateDiagram> ?diagram."+
+					"<"+templateURI+"> <http://www.opmw.org/ontology/createdInWorkflowSystem> ?createdIn."+
+					"<"+templateURI+"> <http://www.opmw.org/ontology/hasNativeSystemTemplate> ?template."+
+					"<"+templateURI+"> <http://www.opmw.org/ontology/versionNumber> ?vNumber."+
+					"OPTIONAL{<"+templateURI+"> <http://purl.org/dc/terms/contributor> ?contrib.}"+
+					"OPTIONAL{<"+templateURI+"> <http://www.opmw.org/ontology/hasDocumentation> ?doc.}"+
+					"}";				
+				//query for retrieving the data variables of the template
+				//NOTE: THIS SHOULD BE 3 QUERIES INSTEAD OF 1 AND SEPARATING THEM AFTERWARDS.
+				var sparql_data_variables_par_proc = "select ?var ?label where {"+
+				"{"+
+				"?var <http://www.opmw.org/ontology/isStepOfTemplate> <"+templateURI+">."+
+				"?var <http://www.w3.org/2000/01/rdf-schema#label> ?label"+
+				"}"+
+				"UNION"+
+				"{?var <http://www.opmw.org/ontology/isVariableOfTemplate> <"+templateURI+">."+
+				"?var <http://www.w3.org/2000/01/rdf-schema#label> ?label"+
+				"}"+
+				"UNION"+
+				"{?var <http://www.opmw.org/ontology/isParameterOfTemplate> <"+templateURI+">."+
+				"?var <http://www.w3.org/2000/01/rdf-schema#label> ?label"+
+				"}"+
+				"}";
+				
+				//query for retrieving the available executions
+				var sparql_executions = "select ?exec where {"+
+				"?exec <http://www.opmw.org/ontology/correspondsToTemplate> <"+templateURI+">}";
+				 
+				var queryURL = 
+					"http://opmw.org/sparql?query=" + 
+					escape(sparql_data_variables_par_proc) + 
+					"&format=json";	 
+				//alert(queryURL);
+				// we load the data variables, parameters and processes
+				$.ajax( {
+					dataType: 'jsonp',
+					jsonp :'callback',
+					url :queryURL,
+					success : function(json) {						
+						if(json) {							
+							//alert(json.results.bindings[0].label.value);						
+							$('#resource_input_loading').html("");
+							//llamar el display correspondiente aqui (y parsing, si corresponde)							
+						}
+					}
+				});
+				queryURL = 
+					"http://opmw.org/sparql?query=" + 
+					escape(sparql_metadata) + 
+					"&format=json";	 
+				// We load the template metadata
+				$.ajax( {
+					dataType: 'jsonp',
+					jsonp :'callback',
+					url :queryURL,
+					success : function(json) {						
+						if(json) {	
+							// render the manifestation table
+							$('#resource_input_loading').html("");
+							if(!json.results.bindings[0].modified)json.results.bindings[0].modified="N/A";
+							if(!json.results.bindings[0].contrib)json.results.bindings[0].contrib="N/A";
+							if(!json.results.bindings[0].doc)json.results.bindings[0].doc="N/A";
+							displayTemplateMetadata(json.results.bindings[0].modified.value, 
+								json.results.bindings[0].label.value,
+									json.results.bindings[0].diagram.value,
+										json.results.bindings[0].createdIn.value,
+											json.results.bindings[0].template.value,
+												json.results.bindings[0].vNumber.value,
+													json.results.bindings[0].contrib.value,
+														json.results.bindings[0].doc.value);							
+						}
+					}
+				});
+				// we load the data variables, parameters and processes
+				queryURL = 
+					"http://opmw.org/sparql?query=" + 
+					escape(sparql_data_variables_par_proc) + 
+					"&format=json";	 				
+				$.ajax( {
+					dataType: 'jsonp',
+					jsonp :'callback',
+					url :queryURL,
+					success : function(json) {						
+						if(json) {														
+							$('#resource_input_loading').html("");							
+							displayProcessesAndVariables(json.results.bindings);
+						}
+					}
+				});
+				queryURL = 
+					"http://opmw.org/sparql?query=" + 
+					escape(sparql_executions) + 
+					"&format=json";	 
+				// we load the data variables, parameters and processes
+				// we load the available executions
+				$.ajax( {
+					dataType: 'jsonp',
+					jsonp :'callback',
+					url :queryURL,
+					success : function(json) {						
+						if(json) {								
+							$('#resource_input_loading').html("");
+							displayAvailableExecutions(json.results.bindings);							
+						}
+					}
+				});
+				
+			}
+			
+			function clean(c){
+				var name = c.slice(c.lastIndexOf("\/")+1, c.length);
+				name = name.replace(/\d+px\s*/g,"");
+				name = name.replace("<","");
+				name = name.replace(">","");
+				name = name.replace("\"","");
+				name = name.replace("Workflow template process ","");
+				name = name.replace("Parameter variable ","");
+				name = name.replace("Data variable ","");
+				return name;
+			}
+			
+			function parseBindings(bindings) {
+				var manifestations = [];
+				for(var i = 0; i < bindings.values.length; i++) {
+//					for(var j =0; j < bindings.values[i].length; j++) {	
+						var manifestation = new Object;
+						//alert (bindings.values);
+						prop = bindings.values[i][0];
+						value = bindings.values[i][1];						
+						//prop = prop.slice();
+						//value = value.slice(0, value.lastIndexOf("\""));
+						value = clean(value);
+						prop = clean(prop);
+						manifestation.prop = prop;
+						manifestation.title = value;
+						manifestations.push(manifestation);
+				}
+				return manifestations;
+			}
+			
+			function parseBindings2(bindings) {
+				var manifestations = [];
+				for(var i = 0; i < bindings.values.length; i++) {
+						var manifestation = new Object;
+						//alert (bindings.values);						
+						value = bindings.values[i][0];
+						value = clean(value);						
+						manifestation.prop = value;						
+						manifestations.push(manifestation);
+				}
+				return manifestations;
+			}
+
+			function displayTemplateMetadata(modified, label, diagram, createdIn, template, vnumber, contrib, doc){
+				var html = 	"<div align='center'>"+							
+							"<a href='"+diagram+"'>"+
+							"<img style='margin-top:5px' src='"+diagram+"' WIDTH=400 border='1'>"+
+							"</a>"+							
+							"</div>";				
+				//"<tr> <td style='width:80px; text-align: center;'><img style='margin-top:5px' src='"+diagram+"' WIDTH=400><\/td><\/tr>"+
+				html += "<table class='resource_table'>"+
+						"<tr style='background-color: #CEE3F6'> <td><span style='font-weight:bold'>Template metadata <\/td><\/td><td style='text-align: right;'><b>[ - ]<\/b><\/td><\/tr>"+
+						"<tr> <td style='padding-left: 50px;'><span style='font-weight:bold'>Template modified on: <\/td><\/td><td>"+modified+"<\/td><\/tr>"+
+						"<tr> <td style='padding-left: 50px;'><span style='font-weight:bold'>Label: <\/td><\/td><td>"+label+"<\/td><\/tr>"+
+						"<tr> <td style='padding-left: 50px;'><span style='font-weight:bold'>Diagram URI: <\/td><\/td><td><a href='"+diagram+"'>"+clean(diagram)+"</a><\/td><\/tr>"+
+						"<tr> <td style='padding-left: 50px;'><span style='font-weight:bold'>Created in workflow system: <\/td><\/td><td><a href='"+createdIn+"'>"+createdIn+"</a><\/td><\/tr>"+
+						"<tr> <td style='padding-left: 50px;'><span style='font-weight:bold'>Native system template URI: <\/td><\/td><td><a href='"+template+"'>"+clean(template)+"</a><\/td><\/tr>"+
+						"<tr> <td style='padding-left: 50px;'><span style='font-weight:bold'>Version number: <\/td><\/td><td>"+vnumber+"<\/td><\/tr>"+
+						"<tr> <td style='padding-left: 50px;'><span style='font-weight:bold'>Template contributor: <\/td><\/td><td><a href='"+contrib+"'>"+contrib+"</a><\/td><\/tr>";
+				if(doc!=""){
+					html+="<tr> <td style='padding-left: 50px;'><span style='font-weight:bold'>Template documentation:  <\/td><\/td><td>"+doc+"<\/td><\/tr>";
+				}
+				html += "<\/table>";//<table class='resource_table'>
+				$("#templateMetadata").html(html);
+			}			
+			
+			function displayProcessesAndVariables(results){
+				//parse here the results
+				//get Data Variables, parameters, processes
+				var dataVariables = [];
+				var parameters = [];
+				var processes = [];
+				for(var i = 0; i < results.length; i++) {
+					//alert(results[1].label.value);
+					if(results[i].var.value.match("\/DataVariable")){
+						//alert(results[i].label.value);
+						dataVariables.push(results[i]);
+					}else if(results[i].var.value.match("\/ParameterVariable")){
+						//alert(results[i].label.value);
+						parameters.push(results[i]);
+					}else if(results[i].var.value.match("\/WorkflowTemplateProcess")){
+						//alert(results[i].label.value);
+						processes.push(results[i]);
+					}
+				}				
+				var html = "<table class='resource_table'>";										
+				html += getHTMLForSection("Data Variables", dataVariables);
+				html += getHTMLForSection("Parameter Variables", parameters);
+				html += getHTMLForSection("Processes", processes);				
+				$("#variablesParametersProcesses").html(html);
+			}
+
+			function getHTMLForSection(title, results){
+				var html ="";
+				html += "<tr style='background-color: #CEE3F6'><td style='vertical-align:top; text-align: left;background-color: #CEE3F6'>"+
+						"<span style='font-weight:bold'>"+title+" <\/span><\/td>";
+				html += "<td style='padding-left: 50px; background-color: #CEE3F6'><b>[ - ]<\/b><\/td><\/tr>"+
+						"<div><tr><td style='padding-left: 50px;'><ol>";
+				for(var i = 0; i < results.length; i++) {
+					var ejecActual = results[i];																							
+					html +=
+							"<li>" + 
+							 "<a href="+ejecActual.var.value+" target='_blank'>"+clean(ejecActual.label.value)+ "</a>  (more)"+
+							"<\/li>";					
+				}		
+				html += "<\/ol><\/td><td><\/td><\/tr><\/div>";
+				return html;
+			}
+			
+			
+			function displayAvailableExecutions(results) {
+				var html = "<table class='resource_table'>";												
+				html += 
+						"<tr><td style='vertical-align:top; text-align: left; background-color: #CEE3F6'>"+
+						"<span style='font-weight:bold'>Available executions<\/span><\/td>";
+				html += "<td style='padding-left: 50px; background-color: #CEE3F6'><b>[ - ]<\/b><\/td><\/tr>"+
+						"<div><tr><td style='padding-left: 50px;'><ol>";
+				//alert(results[0].exec.value);
+						
+				for(var i = 0; i < results.length; i++) {
+					var ejecActual = results[i];																							
+					html +=
+							"<li>" + //<span style='font-weight:bold'>isExecutionTemplateOf<\/span><\/td>
+							 "<a href="+ejecActual.exec.value+" target='_blank'>"+clean(ejecActual.exec.value)+ "</a>"+
+							"<\/li>";					
+				}	
+				html += "<\/ol><\/td><td><\/td><\/tr>";
+				$("#availableExecutions").html(html);
+			}
+			
+			
+			function getURLReduced(url){
+				var reducedURL;
+				if(url.match(/http:\/\//)){						
+					reducedURL = url.replace("http://openprovenance.org/model/opmo#","");
+					reducedURL = reducedURL.replace("http://wings.isi.edu/ontology/opmv/","");
+					reducedURL = reducedURL.replace("http://purl.org/net/opmv/ns/","");
+					reducedURL = reducedURL.replace("http://wings.isi.edu/opmexport/resource/ProcessTemplate/","");//hack to make visualization better
+					reducedURL = reducedURL.replace("http://wings.isi.edu/opmexport/resource/","");
+					reducedURL = reducedURL.replace("http://purl.org/dc/terms/","");
+					reducedURL = reducedURL.replace("http://www.w3.org/1999/02/22-rdf-syntax-ns#","");
+					reducedURL = reducedURL.replace("http://www.w3.org/2000/01/rdf-schema#","");
+				}else {
+					return "";
+				}
+				return reducedURL;
+			}
+			
+			
+			function generateGetTemplateUsages(templateUri) {
+				var sparql = "SELECT ?account WHERE ";
+				sparql += "{" +						
+						"?account <http://wings.isi.edu/ontology/opmv/hasWorkflowTemplate> <"+templateUri+"> ." ;						
+				sparql += "}"; 			
+				return sparql;
+			}
+
+			function displayInputs(inputs,index) {
+				var html = "";				
+				//_manifestation = parseManifestationEntry(bindings, manifestationUri);
+				//html += loadManifestationTable(type);
+				html += "<tr><td><span style='font-weight:bold'><\/span><\/td>"+
+							"<td><span style='font-weight:bold'>INPUTS<\/span><\/td>" + 
+							"<\/tr>";
+				for(var i = 0; i< inputs.length; i++){
+					r = getURLReduced(inputs[i].prop);					
+					html += 	
+							"<tr><td><span style='font-weight:bold'><\/span><\/td>"+
+							"<td><span style='font-weight:bold'>uses<\/span><\/td>" +
+							"<td><span><a href="+inputs[i].prop+">"+r+"</a><\/span><\/td>" +
+							"<\/tr><tr>";
+				}
+				
+				$('#author_input' + index).hide();
+				setTimeout(function() { $('#author_input' + index).html(html)},1500);
+				$('#author_input' + index).fadeIn(3500);
+			}
+			
+			function displayOutputs(outputs,index) {
+				var html = "";								
+				html += "<tr><td><span style='font-weight:bold'><\/span><\/td>"+
+							"<td><span style='font-weight:bold'>OUTPUTS<\/span><\/td>" + 
+							"<\/tr>";
+				for(var i = 0; i< outputs.length; i++){
+					r = getURLReduced(outputs[i].prop);					
+					html += 	
+							"<tr><td><span style='font-weight:bold'><\/span><\/td>"+
+							"<td><span style='font-weight:bold'>generates<\/span><\/td>" +
+							"<td><span><a href="+outputs[i].prop+">"+r+"</a><\/span><\/td>" +
+							"<\/tr><tr>";
+				}
+				
+				$('#author_output' + index).hide();
+				setTimeout(function() { $('#author_output' + index).html(html)},1500);
+				$('#author_output' + index).fadeIn(3500);
+			}
+			
+			function displayCodeImpl(name,code,index) {
+				var html = "";								
+				html += "<tr><td><span style='font-weight:bold'><\/span><\/td>"+
+							"<td><span style='font-weight:bold'>IMPLEMENTATIONS<\/span><\/td>" + 
+							"<\/tr>";
+				for(var i = 0; i< code.length; i++){
+					//r = getURLReduced(code[i].prop);					
+					html += 	
+							"<tr><td><span style='font-weight:bold'><\/span><\/td>"+
+							"<td><span style='font-weight:bold'>code<\/span><\/td>" +
+							"<td><span><a href="+code[i].prop+">"+name+"Impl"+i+"</a><\/span><\/td>" +
+							"<\/tr><tr>";
+				}
+				
+				$('#author_code' + index).hide();
+				setTimeout(function() { $('#author_code' + index).html(html)},1500);
+				$('#author_code' + index).fadeIn(3500);
+			}
+			
+			/**
+		     * Show/hide a story in the resource details view.
+			 */
+			function toggleStory(divId) {
+				if(_currentStory != null) {
+					$('#' + _currentStory).hide();
+				}
+				if(_currentStory != divId) {
+					$('#' + divId).show();
+					_currentStory = divId;
+				} else {
+					_currentStory = null;
+				}
+			}
+
+			
+			function reloadManifestations(){
+				// Generate the SPARQL request for retrieving the properties of 
+				// the specified Manifestation.  
+				var sparql = generateManifestationsSparqlRequest(_authorUriActual,_offsetActual);
+				// webn+1 URI for executing the sparql query. 
+				var endpointURI = "http://webenemasuno.linkeddata.es/sparql?query=" + escape(sparql) + "&format=json";
+				//alert(sparql);
+				// An ajax request that requests the above URI and parses the response. 
+				$.ajax( {
+					dataType :'jsonp',
+					jsonp :'callback',
+					url :endpointURI,
+					success : function(json) {
+
+						// If we found a manifestation we display it					
+						if( json && 
+							json.results && 
+							json.results.bindings && 
+							json.results.bindings.length > 0) {
+							var bindings = json.results.bindings;
+							//alert(bindings);
+							_manifestations = parseBindings(bindings);
+							
+							//alert(bindings);
+
+							// render the manifestation table
+							$('#resource_input_loading').html("");
+							displayManifestations();
+
+							// fetch and display relevant nytimes article for each author
+							loadManisfestationsDetails();
+						} 
+
+						// If we did not find any resource for the specified 
+						// school, display an error message.  
+						else {
+							$('#resource_input_loading').html("");
+							var html = "<div class='resource_missing'>No se ha encontrado ninguna manifestación bajo el título: " + manifestationName + "<\/div>";
+							$("#templateMetadata").html(html);
+						}
+					}
+				});
+			}
+			
+		</script>
+	</head><body><div style="left: -100em; position: absolute; width: 100em;"></div>
+		<div id="cascaron">
+			<div id="page">
+				<div id="cabecera">					
+					<div style="float: left;margin:5px 5px 5px 5px; display:block">
+					<a href="http://www.oeg-upm.net/">
+						<img src="files/oeg.png" alt="Drugome Demo" id="NYTLogo">
+					</a>
+					</div>
+					<!--
+					<div style="float:right; margin: 60px 5px 5px 5px; font-size: 16px">
+						<a href="wfTempl.html">Workflow browser</a> |
+						<a href="wf.html">Template search</a> |
+						<a href="authorContributor.html">Author and contributor search</a> |
+						<a href="globalSearch.html">Global search</a> 
+					</div>	-->
+					
+				</div>
+				<div id="main" >
+					<div class="body_container" style="margin-left: 0px;>
+						<div class="body_header">
+							<div class="right_column">
+								<h1 id="author_name_header"></h1>								
+							</div>
+							<h1>
+								Workflow browser
+							</h1>
+							<div style="padding-bottom: 0px;">Type the name or the initial letters of the template you want to browse and the system will autocomplete it. For example, type "a" in the box below: </div>
+							<br>
+							<div id="auto_complete_container">
+								<div id="progressbar" style="width:400px; height: 30px;"></div>
+								<div style='padding-top:7px'>Initializing the application: <span id='progess_percent_complete'>0%</span> completed. <img class="loading_img" src='img/loading_bars.gif'/></div>
+
+							</div>
+							
+						</div>						
+					</div>
+						<div class="contenedorContainer" id="templateMetadata">						
+						<div style="border-top: 1px solid rgb(204, 204, 204); height: 100px; margin-top: 10px; padding-top: 10px; padding-bottom: 10px; text-align: center; font-family: Georgia,serif; font-size: 12px; color: rgb(51, 51, 51);" id="templateMetadata">
+						</div>
+						</div>
+						<div class="contenedorContainer" id="variablesParametersProcesses">						
+						<div style=" margin-top: 10px; padding-top: 10px; padding-bottom: 10px; text-align: center; font-family: Georgia,serif; font-size: 12px; color: rgb(51, 51, 51);" id="variablesParametersProcesses">
+						</div>
+						</div>
+						<div class="contenedorContainer" id="availableExecutions">						
+						<div style=" height: 100px; margin-top: 10px; padding-top: 10px; padding-bottom: 10px; text-align: center; font-family: Georgia,serif; font-size: 12px; color: rgb(51, 51, 51);" id="availableExecutions">
+						</div>
+						</div>
+				</div>
+			<div id="inferior">
+				<ul>						
+					<li class=" "><a href="#">ESTO DEBERIA IR A OPMW O WINGS</a></li>							
+				</ul>
+			</div>
+			</div>
+			
+		</div>
+		<div id="popup_dialog"></div>
+	</body></html>
