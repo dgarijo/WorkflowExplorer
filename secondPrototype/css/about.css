@@ -1,0 +1,17 @@
+@import url('https://fonts.googleapis.com/css?family=Lato');
+
+.nav-bar {
+    padding: 2em;
+}
+
+.nav-link {
+  margin: 10px;
+  padding: 1em;
+  border: 1px solid #66ccff;
+}
+
+body {
+  color: #66ccff;
+  text-align: center;
+  font-family: Lato;
+}
