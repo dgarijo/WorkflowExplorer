@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang = "en">
+<head>
+<meta charset = "UTF-8">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet" type="text/css" href="../css/workflow-style.css">
+<title>Workflow</title>
+</head>
+
+<body>
+
+    <!-- Navigation Bar-->
+    <div class="searchbar">
+        <form class="nav navbar-form" role="search">
+            <input type="text" class="form-control" placeholder="Search Workflows" name="search-workflow-name" id="workflow-searchbar">
+        </form>
+    </div>
+    <!-- Navigation Bar-->
+    <div class="workflow-nav">
+        <a class="nav-link" href="index.html">
+            Home
+        </a>
+        <a class="nav-link" href="about.html">
+            About
+        </a>
+    </div>
+
+    <div id="workflow-name" data-toggle="collapse" data-target="#collapseMetadata" aria-expanded="false" aria-controls="collapseExample">
+    </div>
+
+    
+    <ul class="nav nav-tabs">
+        <li class="active workflowTab"><a data-toggle="tab" href="#workflow">Workflow</a></li>
+        <li class="executionTab"><a data-toggle="tab" href="#execution">Execution</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <div id="workflow" class="tab-pane fade in active">
+
+        </div>
+        <div id="execution" class="tab-pane fade">
+            <div class="metadata">
+                <span id="status-icon" class="metadata-icon glyphicon glyphicon-ok-sign" aria-hidden="true"></span>
+                <span id="label-icon" class="metadata-icon glyphicon glyphicon-tags" aria-hidden="true"></span>
+                <span id="start-time-icon" class="metadata-icon glyphicon glyphicon-upload" aria-hidden="true"></span>
+                <span id="end-time-icon" class="metadata-icon glyphicon glyphicon-download" aria-hidden="true"></span>
+                <div class="placeholder">a</div>
+                <div class="metadata-value" id="status-value"></div>
+                <div class="metadata-value" id="label-value"></div>
+                <div class="metadata-value" id="start-time-value"></div>
+                <div class="metadata-value" id="end-time-value"></div>
+            </div>
+        </div>
+    </div>
+    
+<!--    expand and collapse legend-->
+    <div class="panel-group-legend" id="accordionLegend">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h5 class="panel-title" style="text-align:left">
+            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseLegend" style="text-align:left">
+                <i class="indicator glyphicon glyphicon-chevron-down  pull-left"></i>
+                &nbsp;	&nbsp;View Legend
+            </a>
+          </h5>
+        </div>
+        <div id="collapseLegend" class="panel-collapse collapse">
+            <div>
+                <img src="../images/legend.png" style="width:208;height:106px;" id="legend_image" hspace="15" vspace="15"> 
+            </div>
+        </div>
+      </div>
+    </div>
+    
+	
+   
+    
+    <div class="visualization-container" id="viz" style="width:100%;float:left">
+				<select id='selection' style='display:none;'>
+				</select>
+				<svg>
+        </svg>
+        <img id='spinner' src="../images/spin.gif"/ style="display:none">
+    </div>
+
+<!--       THIS IS TIFF"S PART    -->
+
+
+		<div class="panel-group-info" id="accordionInfo"   style="width:35%;float:left">
+
+				<div class="panel panel-warning template" hidden>
+						<div class="panel-heading"> 
+							<span class="glyphicon glyphicon-remove-circle pull-right "></span>
+
+								 <h4 class="panel-title">
+										<a id="link_collapse_info" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
+											Collapsible Group Item #2 (template panel)
+										</a>
+									</h4>
+
+						</div>
+						<div id="collapseThree" class="panel-collapse collapse process">						
+
+
+						<span class="highlight-variables col-md-6" style="display:inline-block; padding:10px 5px">
+						</span>
+
+						<span class="highlight-variables col-md-6" style="display:inline-block; padding:10px 5px" >
+						</span>
+
+						<table id="process_info_table" class = "info_table">
+								<tr>
+										<th align="center">
+												<h5>
+														Input Variables
+												</h5>
+										</th>
+										<th align="center">
+												<h5>
+														Output Variables
+												</h5>
+										</th>
+								</tr>
+								<tbody id="process_info_table_body">
+								</tbody>
+						</table>    
+
+						</div>
+				</div>
+		</div>	
+	
+	
+<!--PANELS FOR VARIABLE INFORMATION-->
+<div class="panel-group-info variable" id="accordionVariables"   style="width:35%;float:left;margin-top:20px">
+    <div class="panel panel-info templ variable" hidden>
+        <div class="panel-heading"> 
+					<span class="glyphicon glyphicon-remove-sign pull-right "></span>
+					
+             <h4 class="panel-title variable">
+								<a id="link_collapse_info" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseTempl">
+									Variable: (template panel)
+								</a>
+							</h4>
+
+        </div>
+			
+					<div id="collapseTempl" class="panel-collapse collapse variable">						  
+						<div style="margin:16px">
+<!--						row 1 basic info-->
+						<div class="row variable_row" style="width:95%">
+							<div class="col-md-3">
+									<h5 style="text-align:left" class="variable-header">Variable Info</h5>
+							</div>
+							<div class="col-md-9 bottom-spacing-negative-2" style="width:70%;float:left;text-align:left;color:dimgrey;font-size:90%;font-weight:lighter" >
+								<div class="bottom-spacing-1 variable-type-update" style="margin-top:8px">
+									<span style="margin-right:8px">Type:</span>
+								</div>
+								
+								<div class="bottom-spacing-1">
+									<span style="margin-right:8px">Generated By:</span>
+								</div>
+							</div>
+						</div>
+						
+						<hr  class="col-md-9 col-md-offset-3" style="width:70%;float:left">
+						
+						<div class="row variable_row" style="width:95%">
+							<div class="col-md-3">
+									<h5 style="text-align:left" class="variable-header">Processes Used By</h5>
+							</div>
+							<div class="col-md-9 bottom-spacing-negative-2" style="width:70%;float:left;text-align:left">
+								<ul style="color:dimgrey;font-size:90%;font-weight:lighter">
+								</ul>
+							</div>
+						</div>
+						
+						<hr  class="col-md-9 col-md-offset-3" style="width:70%;float:left">
+			
+						<div class="row variable_row" style="width:95%">
+							<div class="col-md-3">
+									<h5 style="text-align:left" class="variable-header">Files</h5>
+							</div>
+							<div class="col-md-9 bottom-spacing-negative-2" style="width:70%;float:left;text-align:left;display:inline-block">
+								<select id="file-selector" class="form-control" data-style="btn-info" style="width:100%;display:inline-block">
+								</select>
+								
+								<span>Download:</span>
+							</div>
+						</div>
+						
+					</div>
+        </div>
+    </div>
+</div>	
+
+	
+    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js">
+    </script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.js">
+    </script>
+    <script src="../js/bundle.js">
+    </script>
+    <script src="../js/query.js">
+    </script>
+    <script type="text/javascript" src="https://d3js.org/d3.v4.min.js">
+    </script>
+    <script src="../js/workflowInfoScript.js">
+    </script>
+    <script src="../js/dagre-d3.min.js">
+    </script>
+    <script src="../js/d3.min.js">
+    </script>
+    <script src="../js/visualization.js">
+    </script>
+    <script src="../js/workflow-searchbar.js">
+    </script>
+    <script src="../js/change-tabs.js">
+    </script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js">
+    </script>
+    </body>
+</html>
