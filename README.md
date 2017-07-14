@@ -1,7 +1,7 @@
 # WorkflowExplorer
 Html application for browsing the contents of an endpoint of workflows and their respective execution traces.
 
-New demo: http://dgarijo.github.io/WorkflowExplorer/secondPrototype/html
+New demo: http://dgarijo.github.io/WorkflowExplorer/thirdPrototype/html/
 
 Old demo: http://dgarijo.github.io/WorkflowExplorer/firstPrototype/
 
