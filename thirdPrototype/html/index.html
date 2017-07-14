@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>Workflow Explorer</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Custom styles for this template -->
+    <link href="../css/landing-page.css" rel="stylesheet">
+
+  </head>
+
+
+
+  <body>
+    <div class="nav-bar">
+        <div id="title"></div>
+        <a class="nav-link" href="about.html">
+                About
+        </a>
+        <a class="nav-link" href="index.html">
+                Home
+        </a>
+    </div>
+    
+    <div class="site-wrapper">
+      <div class="site-wrapper-inner">
+          <!-- Navigation Bar-->
+        
+        <div class="cover-container" style="margin-left:auto;margin-right:auto;width:47%;max-width:50%">
+
+          <!-- Page Description -->
+          <div class="inner-cover">
+            <h3 class="cover-heading">Search for Workflows</h3>
+            <p class="search-explanation">Type the name or the initial letters of the template you want to browse and the system will autocomplete it. For example, type "a" in the box below:</p>
+          </div>
+            
+          <!-- Search Bar -->
+          <div id="search-bar"></div>
+        
+            
+          <div class="dropdown">
+            <button class="dropbtn">Choose your endpoint</button>
+                <div class="dropdown-content" id="dropdown-content">
+                        <!--a href="#">Link 1</a>
+                        <a href="#">Link 2</a-->
+                </div>
+          </div>
+            
+          <div id="chosenendpoint">Currently chosen: </div>
+
+        </div> 
+        <h3>Example Workflows</h3>
+        <p>Click on an example workflow to explore, slide left or right to view more examples</p>
+        <div id="examplecontainer">
+
+          <span class="glyphicon glyphicon-chevron-left" id="slideleft"></span>
+
+          <div class="workflowexample" id="example1">
+            <figure class="imagecontainer">
+              <div class="overlaycontainer">
+                <img src="../images/workflow/AquaFlow.PNG" alt="">
+                <div class="overlay" onclick="window.location='workflow-main.html?uri=U2FsdGVkX18IJw4CiI2K/Sl5zUeYYF2zsz/YUFi/m/fnqFg+FRZlV6mjSVS6K2oSshR4Cl6OD/K3R8OWdpXEONx+ZJXynLvMM0xfWPCRi5IveqhZyVLugc4KelsC30uPcxD8w4w+XuRSpl9SqTJSCOwUOGO+G/Nlr6gou/+V4nM='">
+                  <div class="overlaycontent">View Workflow</div>
+                </div>
+              </div>
+              <figcaption>Aqua Flow_CM<br>2 executions</figcaption>
+            </figure>
+          </div>
+
+          <div class="workflowexample" id="example2">
+            <figure class="imagecontainer">
+              <div class="overlaycontainer">
+                <img src="../images/workflow/AquaFlow.PNG" alt="">
+                <div class="overlay" onclick="window.location='workflow-main.html?uri=U2FsdGVkX18IJw4CiI2K/Sl5zUeYYF2zsz/YUFi/m/fnqFg+FRZlV6mjSVS6K2oSshR4Cl6OD/K3R8OWdpXEONx+ZJXynLvMM0xfWPCRi5IveqhZyVLugc4KelsC30uPcxD8w4w+XuRSpl9SqTJSCOwUOGO+G/Nlr6gou/+V4nM='">
+                  <div class="overlaycontent">View Workflow</div>
+                </div>
+              </div>
+              <figcaption>Aqua Flow_CM<br>2 executions</figcaption>
+            </figure>
+          </div>
+
+          <div class="workflowexample" id="example3">
+            <figure class="imagecontainer">
+              <div class="overlaycontainer">
+                <img src="../images/workflow/AquaFlow.PNG" alt="">
+                <div class="overlay" onclick="window.location='workflow-main.html?uri=U2FsdGVkX18IJw4CiI2K/Sl5zUeYYF2zsz/YUFi/m/fnqFg+FRZlV6mjSVS6K2oSshR4Cl6OD/K3R8OWdpXEONx+ZJXynLvMM0xfWPCRi5IveqhZyVLugc4KelsC30uPcxD8w4w+XuRSpl9SqTJSCOwUOGO+G/Nlr6gou/+V4nM='">
+                  <div class="overlaycontent">View Workflow</div>
+                </div>
+              </div>
+              <figcaption>Aqua Flow_CM<br>2 executions</figcaption>
+            </figure>
+          </div>
+
+          <div class="workflowexample" id="example4">
+            <figure class="imagecontainer">
+              <div class="overlaycontainer">
+                <img src="../images/workflow/AquaFlow.PNG" alt="">
+                <div class="overlay" onclick="window.location='workflow-main.html?uri=U2FsdGVkX18IJw4CiI2K/Sl5zUeYYF2zsz/YUFi/m/fnqFg+FRZlV6mjSVS6K2oSshR4Cl6OD/K3R8OWdpXEONx+ZJXynLvMM0xfWPCRi5IveqhZyVLugc4KelsC30uPcxD8w4w+XuRSpl9SqTJSCOwUOGO+G/Nlr6gou/+V4nM='">
+                  <div class="overlaycontent">View Workflow</div>
+                </div>
+              </div>
+              <figcaption>Aqua Flow_CM<br>2 executions</figcaption>
+            </figure>
+          </div>
+
+          <span class="glyphicon glyphicon-chevron-right" id="slideright"></span>
+
+          <br>
+        </div>  
+          <div class="disclaimer">Workflow Explorer is a beta in progress</div>
+    </div>
+  </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+      
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src = "../js/endpoint.js"></script>
+    <script src="../js/query.js"></script>
+    <script src = "../js/bundle.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
+    
+  </body>
+
+</html>

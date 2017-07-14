@@ -1,0 +1,18 @@
+For general development, we have narrowed our search down to AngularJS and ReactJS but we are having trouble with selecting 
+which would be better for the project. We think that either option would be suitable for the project. We have considered a few
+things thus far (listed and explained below).
+1. Performance- We think the performance of either would be fine; Angular 1 had performance issues but since Angular 2 
+came out, many optimizations have been performed to help with performance. 
+2. Effort to learn- Angular is written using very specific-to-Angular Javascript syntax and patterns, so it would require 
+some effort to get used to the Angular 2 framework whereas React uses regular Javascript for developing. However, that does not mean React will not require little effort to learn. React makes use of a unidirectional flow of data to its components as opposed to Anguar's two-way data binding strategy. To allow this, React uses a custom application architecture called Flux to control the flow of data to React components. Thus, we would still need to learn how to use Flux, which is the part of the application we would use to make SPARQL queries, we believe. 
+3. Debugging- Since Angular uses bidirectional data binding, it can be difficult to determine (if the application contains a 
+lot of components) the source of an issue when we are debugging. With React, because the data is coming through a Flux dispatcher, we can more easily know the source of a code bug. 
+4. Breadth of functionality- Angular has framework-developed dependency injection capabilities while React requires the use 
+of an external library (e.g. RequireJS through Babel). Also, since Angular is a framework while React is a library, Angular 
+overall offers more built-in-tools to use while developing such as directives to organize code around the DOM. With React,
+we might not be experienced enough to develop an effective structure for the application; directives in Angular force us to 
+organize our work a certain way.
+5. Long term benefit- Angular Javascript is specific only to Angular. React Javascript is like regular Javascript. Knowing 
+this, it can be more beneficial for our long-term development to do the project React; React Javascript also contains React
+Native, used to develop mobile applications. By knowing React, we can apply what we learn to more than what we learn from 
+Angular.

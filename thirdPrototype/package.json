@@ -1,0 +1,26 @@
+{
+  "name": "portal-2.0",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "webpack-dev-server --hot"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tetruong/Portal2.0.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tetruong/Portal2.0/issues"
+  },
+  "homepage": "https://github.com/tetruong/Portal2.0#readme",
+  "dependencies": {
+    "react": "^15.4.2",
+    "react-autosuggest": "^8.0.1",
+    "react-dom": "^15.4.2",
+    "webpack": "^1.14.0",
+    "webpack-dev-server": "^1.16.2"
+  }
+}
