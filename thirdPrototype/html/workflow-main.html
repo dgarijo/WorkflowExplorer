@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang = "en">
+<head>
+<meta charset = "UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet" type="text/css" href="../css/workflow-style.css">
+<title>Workflow</title>
+</head>
+
+<body>
+    <div id="root"></div>
+    <div class="topnav" id="myTopnav">
+        <!-- Navigation Bar-->
+        <div class="searchbar">
+            <form class="nav navbar-form" role="search">
+                <input type="text" class="form-control" placeholder="Search Workflows" name="search-workflow-name" id="workflow-searchbar">
+            </form>
+        </div>
+        <div class="title">
+            <h1>Workflow Explorer</h1>
+        </div>
+        <!-- Navigation Bar-->
+        <div class="workflow-nav">
+            <a class="nav-link" href="about.html">
+                About
+            </a>
+            <a class="nav-link" href="index.html">
+                Home
+            </a>
+        </div>
+    </div>
+    
+
+
+    <ul class="nav nav-tabs">
+        <li class="active workflowTab"><a data-toggle="tab" href="#workflow">Workflow</a></li>
+        <li class="executionTab"><a data-toggle="tab" href="#execution">Execution</a></li>
+        <div id="workflow-name" data-toggle="collapse" data-target="#collapseMetadata" 
+        aria-expanded="false" aria-controls="collapseExample">         
+        </div>
+        <div id="execution-name"></div>
+        <a id="RDFImage-link1" target="_blank">
+            <img id="RDFImage-bar1" src="../images/RDFLink.png">
+            <p id="RDFLink1">See RDF</p>
+        </a>
+        <a id="DownloadTemplate-link" target="_blank">
+            <span id="TemplateDownload" class="glyphicon glyphicon-cloud-download"></span>
+            <p id="DownloadTemplateLink">Download Template</p>
+        </a>
+        <a id="RDFImage-link2" target="_blank">
+            <img id="RDFImage-bar2" src="../images/RDFLink.png" style="display: none">
+            <p id="RDFLink2">See RDF</p>
+        </a>
+    </ul>
+   
+    
+    
+    
+     <!-- div id="workflowName" onload="this.innerhtml += document.getElementById('workflow-name').innerhtml"> This is a sentence</div>-->
+
+
+    
+   
+ <div class="bigCanvas">  
+ 
+    <div class="visualization-container" id="viz" style="width:65%;float:left">
+        <svg>
+        </svg>
+        <img id='spinner' src="../images/spin.gif"/ style="display:none">
+    </div>
+    
+     
+  <div class="rightCanvas" style="width:35%;float:right">
+      <div id="selection-explanation" style='display:none; font-size:17px'>Selected execution trace below:</div>
+      <select id='selection' style='display:none'>
+                </select>
+
+    <div class="tab-content">
+        <div id="workflow" class="tab-pane fade in active">
+            <div class="metadata">
+                <span id="contributer-icon" class="metadata-icon glyphicon glyphicon-user" aria-hidden="true"></span>
+                <span id="modified-icon" class="metadata-icon glyphicon glyphicon-time" aria-hidden="true"></span>
+                <span id="system-icon" class="metadata-icon glyphicon glyphicon-th-large" aria-hidden="true"></span>
+                <span id="version-icon" class="metadata-icon glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+                <div class="placeholder" id="placeholder1"></div>
+                <div class="metadata-value" id="contributer-value"></div>
+                <div class="metadata-value" id="modified-value"></div>
+                <div class="metadata-value" id="system-value"></div>
+                <div class="metadata-value" id="version-value"></div>
+            </div>
+
+        </div>
+        <div id="execution" class="tab-pane fade">
+            <div class="metadata">
+                <span id="status-icon" class="metadata-icon glyphicon glyphicon-ok-sign" aria-hidden="true"></span>
+                <span id="label-icon" class="metadata-icon glyphicon glyphicon-tags" aria-hidden="true"></span>
+                <span id="start-time-icon" class="metadata-icon glyphicon glyphicon-chevron-up" aria-hidden="true"></span>
+                <span id="end-time-icon" class="metadata-icon glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+                <div class="placeholder" id="placeholder2"></div>
+                <div class="metadata-value" id="status-value"></div>
+                <div class="metadata-value" id="label-value"></div>
+                <div class="metadata-value" id="start-time-value"></div>
+                <div class="metadata-value" id="end-time-value"></div>
+            </div>
+        </div>
+    </div>
+      
+      
+    <div class="panel-group-legend" id="accordionLegend">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h5 class="panel-title" style="text-align:center">
+            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseLegend" style="text-align:center" id="togglelegendlink" onclick="fitinScreen($(this))">
+                <i class="indicator glyphicon glyphicon-chevron-down  pull-left"></i>
+                &nbsp;  &nbsp;Toggle Legend
+            </a>
+          </h5>
+        </div>
+        <div id="collapseLegend" class="panel-collapse collapse in">
+            <div>
+                <img src="../images/new-legend.png" style="height:66px;" id="legend_image" hspace="15" vspace="15"> 
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+    
+ </div> 
+<!--       THIS IS TIFF"S PART    -->
+
+
+        <div class="panel-group-info" id="accordionInfo"   style="width:35%;float:left">
+
+                <div class="panel panel-warning template" hidden>
+                    <a id="RDFImage-variable-link" target="_blank">
+                        <p id="RDFVariableLink">See RDF</p>
+                        <img class="RDFImage-variable" src="../images/RDFLink.png">
+                    </a>
+                    <a id="DownloadImage-variable-link" target="_blank">
+                        <span id="fileDownload" class="glyphicon glyphicon-cloud-download"></span>
+                        <p id="DownloadLink">Download</p>
+                    </a>
+                        <div class="panel-heading"> 
+                            <span class="glyphicon glyphicon-remove-circle pull-right "></span>
+
+                                 <h4 class="panel-title">
+                                        <a id="link_collapse_info" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
+                                            Collapsible Group Item #2 (template panel)
+                                        </a>
+                                    </h4>
+
+                        </div>
+                        <div id="collapseThree" class="panel-collapse collapse process">                        
+
+                        <table id="process_info_table" class = "info_table">
+                                <tr>
+                                        <th align="center">
+                                                <h5>
+                                                        Input Variables
+                                                </h5>
+                                        </th>
+                                        <th align="center">
+                                                <h5>
+                                                        Output Variables
+                                                </h5>
+                                        </th>
+                                </tr>
+                                <tbody id="process_info_table_body">
+                                </tbody>
+                        </table>    
+
+                        </div>
+                </div>
+        </div>  
+    
+    
+<!--PANELS FOR VARIABLE INFORMATION-->
+<div class="panel-group-info variable" id="accordionVariables"   style="width:35%;float:left;margin-top:20px">
+    
+    <div class="panel panel-info templ variable" hidden>
+        <a id="RDFImage-variable-link" target="_blank">
+            <img class="RDFImage-variable" src="../images/RDFLink.png">
+            <p id="RDFVariableLink">See RDF</p>
+        </a>
+        <a id="DownloadImage-variable-link" target="_blank">
+            <span id="fileDownload" class="glyphicon glyphicon-cloud-download"></span>
+            <p id="DownloadLink">Download</p>
+        </a>
+        <div class="panel-heading"> 
+                    <span class="glyphicon glyphicon-remove-sign pull-right "></span>
+                    
+             <h4 class="panel-title variable">
+                                <a id="link_collapse_info" class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseTempl">
+                                    Variable: (template panel)
+                                </a>
+                            </h4>
+
+        </div>
+            
+            <div id="collapseTempl" class="panel-collapse collapse variable">                         
+                <div style="margin:16px">
+<!--                        row 1 basic info-->
+                        <div class="row variable_row" style="width:100%">
+                            <div class="col-md-3">
+                                    <h5 style="text-align:center" class="variable-header">Type:</h5>
+                            </div>
+                            <div class="col-md-9 bottom-spacing-negative-2" style="width:70%;float:left;text-align:left">
+                                <ul style="color:dimgrey;font-weight:700">
+                                </ul>
+                            </div>
+                        </div>
+
+                        <hr  class="col-md-9 col-md-offset-3" style="width:70%;float:left">
+
+                        <div class="row variable_row" style="width:100%">
+                            <div class="col-md-3">
+                                    <h5 style="text-align:center" class="variable-header">Generated By:</h5>
+                            </div>
+                            <div class="col-md-9 bottom-spacing-negative-2" style="width:70%;float:left;text-align:left">
+                                <ul style="color:dimgrey;font-weight:700">
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <hr  class="col-md-9 col-md-offset-3" style="width:70%;float:left">
+                        
+                        <div class="row variable_row" style="width:100%">
+                            <div class="col-md-3">
+                                    <h5 style="text-align:center" class="variable-header">Used By:</h5>
+                            </div>
+                            <div class="col-md-9 bottom-spacing-negative-2" style="width:70%;float:left;text-align:left">
+                                <ul style="color:dimgrey;font-weight:700">
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="variableValue">
+                        <hr class="col-md-9 col-md-offset-3" style="width:70%;float:left">
+            
+                        <div class="row variable_row file_row" style="width:100%">
+                            <div class="col-md-3">
+                                    <h5 style="text-align:center" class="variable-header">Value:</h5>
+                            </div>
+                            <div class="col-md-9 bottom-spacing-negative-2" style="width:70%;float:left;text-align:left;display:inline-block;margin-top: 2.1%">
+                                <span style="margin-left: 15%; color: dimgrey;font-size: 90%;font-weight:700"></span>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+        </div>
+    </div>
+</div>  
+
+    
+    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js">
+    </script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.js">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
+    <script src="../js/bundle.js">
+    </script>
+    <script src="../js/query.js">
+    </script>
+    <script type="text/javascript" src="https://d3js.org/d3.v4.min.js">
+    </script>
+    <script src="../js/workflowInfoScript.js">
+    </script>
+    <script src="../js/dagre-d3.min.js">
+    </script>
+    <script src="../js/d3.min.js">
+    </script>
+    <script src="../js/visualization.js">
+    </script>
+    <script src="../js/workflow-searchbar.js">
+    </script>
+    <script src="../js/change-tabs.js">
+    </script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js">
+    </script>
+    </body>
+</html>

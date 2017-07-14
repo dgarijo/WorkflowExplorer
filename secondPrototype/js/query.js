@@ -1,5 +1,5 @@
-var endpoint = 'http://seagull.isi.edu:3030/ds/';
-
+//var endpoint = 'http://seagull.isi.edu:3030/ds/';
+var endpoint = 'http://disk.isi.edu:3030/ds/';
 /*
     @params: function "handler" that can be called when ajax call finishes
     
